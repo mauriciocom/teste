@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro e Login</title>
+</head>
+<body>
+    <!-- Título Dinâmico -->
+    <h1 id="tituloPagina">Cadastro</h1>
+
+    <!-- Formulário de Cadastro -->
+    <div id="formCadastro">
+        <h2>Cadastro de Usuário</h2>
+        <form id="register-form">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+
+            <label for="categoria">Categoria Favorita:</label>
+            <select id="categoria" required>
+                <option value="bolsas">bolsas</option>
+                <option value="necessaires">necessaires</option>
+                <option value="mochilas">mochilas</option>
+            </select><br><br>
+
+            <label for="password">Senha:</label>
+            <input type="password" id="password" required>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+    </div>
+
+    <!-- Formulário de Login -->
+    <div id="formLogin" style="display: none;">
+        <h2>Login</h2>
+        <form id="login-form">
+            <label for="login-username">Nome de Usuário:</label>
+            <input type="text" id="login-username" required>
+            
+            <label for="login-password">Senha:</label>
+            <input type="password" id="login-password" required>
+            
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+
+    <!-- Mensagem de Sucesso ou Erro -->
+    <div id="mensagem"></div>
+
+    <!-- Área de Recomendações -->
+    <div id="recomendacoes" style="display: none;">
+        <h2>Recomendações para Você</h2>
+        <ul id="listaRecomendacoes"></ul>
+    </div>
+
+    <script>
+        // Função para alterar o título conforme a tela (Cadastro ou Login)
+        function alterarTitulo(titulo) {
+            const tituloPagina = document.getElementById("tituloPagina");
+            tituloPagina.innerText = titulo;
+        }
+
+        // Função para registrar o usuário
+        document.getElementById("register-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById("nome").value;
+            const email = document.getElementById("email").value;
+            const categoria = document.getElementById("categoria").value;
+            const senha = document.getElementById("password").value;
+
+            // Objeto para armazenar o usuário no localStorage
+            const usuario = {
+                nome: nome,
+                email: email,
+                categoriaFavorita: categoria,
+                senha: senha // Salva a senha fornecida pelo usuário
+            };
+
+            // Salva o usuário no localStorage
+            localStorage.setItem("usuario", JSON.stringify(usuario));
+
+            // Exibe mensagem de sucesso e esconde o formulário de cadastro
+            document.getElementById("mensagem").innerText = "Cadastro realizado com sucesso!";
+            document.getElementById("formCadastro").style.display = "none";
+            document.getElementById("formLogin").style.display = "block";
+
+            // Atualiza o título para "Login"
+            alterarTitulo("Login");
+        });
+
+        // Função para login do usuário
+        document.getElementById("login-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById("login-username").value;
+            const password = document.getElementById("login-password").value;
+
+            // Recupera o usuário do localStorage
+            const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+            // Verifica se o nome de usuário e a senha correspondem ao cadastro
+            if (usuario && usuario.nome === username && usuario.senha === password) {
+                alert('Login bem-sucedido!');
+                mostrarRecomendacoes(usuario.categoriaFavorita);  // Mostrar recomendações com base na categoria
+            } else {
+                alert('Nome de usuário ou senha incorretos.');
+            }
+        });
+
+        // Função para mostrar recomendações baseadas na categoria favorita
+        function mostrarRecomendacoes(categoria) {
+            const recomendacoes = {
+                bolsas: ["Bolsa de Couro", "Bolsa Transversal", "Bolsa de Mão"],
+                necessaires: ["Necessaire Feminina", "Necessaire de Viagem", "Necessaire Organizador"],
+                mochilas: ["Mochila de Lona", "Mochila escolar", "Mochila Infantil"]
+            };
+
+            const listaRecomendacoes = document.getElementById("listaRecomendacoes");
+            listaRecomendacoes.innerHTML = ""; // Limpa a lista antes de adicionar novas recomendações
+
+            // Adiciona os produtos recomendados para a categoria favorita
+            recomendacoes[categoria].forEach(produto => {
+                const li = document.createElement("li");
+                li.textContent = produto;
+                listaRecomendacoes.appendChild(li);
+            });
+
+            // Exibe a seção de recomendações
+            document.getElementById("recomendacoes").style.display = "block";
+        }
+    </script>
+</body>
+</html>
